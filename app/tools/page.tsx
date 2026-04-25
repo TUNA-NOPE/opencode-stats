@@ -13,17 +13,28 @@ export default function ToolsPage() {
   const [stats, setStats] = useState<OpenCodeStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [cacheInfo, setCacheInfo] = useState<{
+    cachedAt: string | null;
+    isCached: boolean;
+    cacheAge: string;
+  } | null>(null);
 
-  const fetchStats = async () => {
+  const fetchStats = async (forceRefresh = false) => {
     setLoading(true);
     setError(null);
     
     try {
-      const response = await fetch('/api/stats');
+      const url = forceRefresh ? '/api/stats?refresh=true' : '/api/stats';
+      const response = await fetch(url);
       const data = await response.json();
       
       if (data.success) {
         setStats(data.data);
+        setCacheInfo({
+          cachedAt: data.cachedAt,
+          isCached: data.isCached,
+          cacheAge: data.cacheAge
+        });
       } else {
         setError(data.error || 'Failed to fetch stats');
       }
@@ -56,7 +67,7 @@ export default function ToolsPage() {
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
               <p className="text-destructive font-medium">{error}</p>
-              <Button onClick={fetchStats} variant="outline">
+              <Button onClick={() => fetchStats()} variant="outline">
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Try Again
               </Button>
@@ -91,10 +102,19 @@ export default function ToolsPage() {
             Deep dive into your OpenCode tool usage patterns
           </p>
         </div>
-        <Button onClick={fetchStats} variant="outline" disabled={loading}>
-          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-4">
+          {cacheInfo?.isCached ? (
+            <span className="text-sm text-muted-foreground">
+              Cached {cacheInfo.cacheAge} ago
+            </span>
+          ) : cacheInfo ? (
+            <span className="text-sm text-green-600">Live data</span>
+          ) : null}
+          <Button onClick={() => fetchStats(true)} variant="outline" disabled={loading}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            Force Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Summary Cards */}
