@@ -37,7 +37,7 @@ bun run dev
 
 ## Architecture
 
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js 16 with App Router
 - **Runtime**: Bun
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Charts**: Recharts
