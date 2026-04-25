@@ -29,8 +29,10 @@ export interface ModelPricing {
   id: string;
   name: string;
   provider: string;
-  inputPrice: number;  // per 1M tokens
-  outputPrice: number; // per 1M tokens
+  inputPrice: number;       // per 1M tokens
+  outputPrice: number;      // per 1M tokens
+  cachedReadPrice: number;  // per 1M tokens (prompt caching read)
+  cachedWritePrice: number; // per 1M tokens (prompt caching write)
   contextWindow: number;
 }
 

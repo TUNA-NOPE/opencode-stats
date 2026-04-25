@@ -19,6 +19,7 @@ export function CostComparison({ stats, currentCost }: CostComparisonProps) {
     tokens.input,
     tokens.output,
     tokens.cacheRead,
+    tokens.cacheWrite,
     DEFAULT_MODELS
   );
   
@@ -79,6 +80,7 @@ export function CostComparison({ stats, currentCost }: CostComparisonProps) {
                   <TableHead>Provider</TableHead>
                   <TableHead className="text-right">Input/1M</TableHead>
                   <TableHead className="text-right">Output/1M</TableHead>
+                  <TableHead className="text-right">Cached/1M</TableHead>
                   <TableHead className="text-right">Est. Cost</TableHead>
                   <TableHead className="text-center">vs Current</TableHead>
                 </TableRow>
@@ -95,6 +97,9 @@ export function CostComparison({ stats, currentCost }: CostComparisonProps) {
                     </TableCell>
                     <TableCell className="text-right">
                       ${comparison.model.outputPrice.toFixed(3)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      ${comparison.model.cachedReadPrice.toFixed(3)}
                     </TableCell>
                     <TableCell className="text-right font-bold">
                       {formatCurrency(comparison.totalCost)}
@@ -132,8 +137,12 @@ export function CostComparison({ stats, currentCost }: CostComparisonProps) {
                     <span>{formatCurrency(comparison.outputCost)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Cache:</span>
-                    <span>{formatCurrency(comparison.cacheCost)}</span>
+                    <span>Cache Read:</span>
+                    <span>{formatCurrency(comparison.cacheReadCost)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Cache Write:</span>
+                    <span>{formatCurrency(comparison.cacheWriteCost)}</span>
                   </div>
                   <div className="flex justify-between font-bold pt-1 border-t">
                     <span>Total:</span>
