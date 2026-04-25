@@ -7,8 +7,6 @@
 
 A beautiful, real-time dashboard for visualizing your [OpenCode](https://opencode.ai) CLI usage statistics with intelligent cost comparisons across 24+ AI models.
 
-![Dashboard Preview](https://via.placeholder.com/800x400?text=OpenCode+Stats+Dashboard)
-
 ## 🎥 Demo Video
 
 [Watch Demo](https://via.placeholder.com/800x450?text=Demo+Video+Placeholder) *(Coming Soon)*
