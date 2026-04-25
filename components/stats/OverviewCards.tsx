@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OpenCodeStats } from '@/types';
-import { Messages, Calendar, DollarSign, Hash } from 'lucide-react';
+import { MessageSquare, Calendar, DollarSign, Hash } from 'lucide-react';
 
 interface OverviewCardsProps {
   stats: OpenCodeStats;
@@ -21,7 +21,7 @@ export function OverviewCards({ stats }: OverviewCardsProps) {
     {
       title: 'Total Messages',
       value: overview.messages.toLocaleString(),
-      icon: Messages,
+      icon: MessageSquare,
       description: 'Messages sent',
     },
     {
