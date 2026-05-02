@@ -4,7 +4,7 @@ import { ModelPricing } from '@/types';
 export interface ProviderPlan {
   id: string;
   name: string;
-  provider: 'OpenAI Codex' | 'Claude' | 'OpenCode Zen' | 'OpenCode Go' | 'FirePass' | 'Crof AI' | 'Kimi' | 'MiniMax' | 'Qwen' | 'Replicate' | 'Cloudflare';
+  provider: 'OpenAI Codex' | 'Claude' | 'OpenCode Zen' | 'OpenCode Go' | 'FirePass' | 'Crof AI' | 'Kimi' | 'MiniMax' | 'Qwen' | 'Replicate' | 'Cloudflare' | 'Google AI Studio' | 'GitHub Copilot' | 'Factory AI' | 'Cursor';
   monthlyCost: number;
   yearlyCost?: number;
   description: string;
@@ -291,11 +291,15 @@ export const PROVIDER_PLANS: ProviderPlan[] = [
     id: 'firepass-unlimited',
     name: 'FirePass Unlimited',
     provider: 'FirePass',
-    monthlyCost: 30,  // $7/week ≈ $30/month
-    description: 'Unlimited Kimi K2.5 Turbo access',
-    features: ['Unlimited tokens', 'Kimi K2.5 Turbo', 'Zero token pricing', 'Weekly billing'],
+    monthlyCost: 30.33,  // $7/week = exactly $30.33/month (7*52/12)
+    description: 'Unlimited Kimi K2.5 Turbo access - $7/week billed weekly',
+    features: ['Unlimited tokens', 'Kimi K2.5 Turbo', 'Zero token pricing after subscription', 'Weekly $7 billing', 'No usage limits', 'Flat rate regardless of volume'],
     usageLimits: { unlimited: true },
     includedModels: ['Kimi K2.5 Turbo'],
+    overagePricing: {
+      inputPerMTok: 0,  // Included in subscription
+      outputPerMTok: 0, // Included in subscription
+    },
     subscriptionType: 'monthly',
   },
 
@@ -874,6 +878,98 @@ export const PROVIDER_PLANS: ProviderPlan[] = [
     subscriptionType: 'usage-based',
   },
 
+  // Google AI Studio - Consumer Subscription Plans
+  {
+    id: 'google-ai-studio-free',
+    name: 'Google AI Studio Free',
+    provider: 'Google AI Studio',
+    monthlyCost: 0,
+    description: '50 AI credits daily for casual use',
+    features: [
+      '50 AI credits daily (resets each day)',
+      '128K context window',
+      'Limited model access',
+      'Gemini 2.5 Flash access',
+      'No credit card required',
+    ],
+    usageLimits: { dailyRequests: 50 },
+    includedModels: ['Gemini 2.5 Flash', 'Gemini 2.5 Flash-Lite'],
+    subscriptionType: 'free',
+  },
+  {
+    id: 'google-ai-studio-plus',
+    name: 'Google AI Studio Plus',
+    provider: 'Google AI Studio',
+    monthlyCost: 7.99,
+    description: '200GB storage + 200 AI credits for casual users',
+    features: [
+      '200 AI credits per month',
+      '200 GB storage included',
+      '128K context window',
+      'AI Mode for enhanced interactions',
+      'Image generation access',
+      'Music generation access',
+      'Gemini 2.5 Pro access',
+      'Gemini 2.5 Flash access',
+    ],
+    usageLimits: { requestsPerMonth: 200 },
+    includedModels: ['Gemini 2.5 Pro', 'Gemini 2.5 Flash', 'Gemini 2.5 Flash-Lite'],
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'google-ai-studio-pro',
+    name: 'Google AI Studio Pro',
+    provider: 'Google AI Studio',
+    monthlyCost: 19.99,
+    description: '5TB storage + 1,000 credits + Jules coding agent for developers',
+    features: [
+      '1,000 AI credits per month',
+      '5 TB storage included',
+      '1M context window (10x larger)',
+      'Jules coding agent integration',
+      '$10 Google Cloud credits included',
+      'AI Mode for enhanced interactions',
+      'Image generation access',
+      'Music generation access',
+      'Credit top-ups available',
+      'Gemini 2.5 Pro (stable)',
+      'Gemini 2.5 Flash (fast)',
+      'Gemini 2.5 Flash-Lite (cheapest)',
+    ],
+    usageLimits: { requestsPerMonth: 1000 },
+    includedModels: ['Gemini 2.5 Pro', 'Gemini 2.5 Flash', 'Gemini 2.5 Flash-Lite'],
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'google-ai-studio-ultra',
+    name: 'Google AI Studio Ultra',
+    provider: 'Google AI Studio',
+    monthlyCost: 49.99,
+    description: '30TB storage + 25,000 credits + Deep Think for power users',
+    features: [
+      '25,000 AI credits per month',
+      '30 TB storage included',
+      '1M context window',
+      'Deep Think advanced reasoning',
+      '$100 Google Cloud credits included',
+      'YouTube Premium included',
+      'Jules coding agent integration',
+      'AI Mode for enhanced interactions',
+      'Image generation access',
+      'Music generation access',
+      'Veo video generation (10-100 credits per video)',
+      'Credit top-ups available',
+      'Priority access to new models',
+      'Gemini 2.5 Pro (stable)',
+      'Gemini 2.5 Flash (fast)',
+      'Gemini 2.5 Flash-Lite (cheapest)',
+      'Gemini 3.x series (preview)',
+    ],
+    usageLimits: { requestsPerMonth: 25000 },
+    includedModels: ['Gemini 2.5 Pro', 'Gemini 2.5 Flash', 'Gemini 2.5 Flash-Lite', 'Gemini 3.x series'],
+    subscriptionType: 'monthly',
+  },
+
   // Replicate AI - Model Hosting Platform (NOT a direct LLM provider)
   {
     id: 'replicate-payg',
@@ -930,6 +1026,512 @@ export const PROVIDER_PLANS: ProviderPlan[] = [
     },
     payPerUse: true,
     subscriptionType: 'usage-based',
+  },
+
+  // GitHub Copilot Plans - Individual
+  {
+    id: 'copilot-free',
+    name: 'Copilot Free',
+    provider: 'GitHub Copilot',
+    monthlyCost: 0,
+    description: 'Free tier with essential AI coding assistance',
+    features: [
+      'Agent mode',
+      'Chat assistance',
+      'Copilot CLI',
+      '2,000 code completions/month',
+      'IDE integration (VS Code, JetBrains, etc.)',
+    ],
+    usageLimits: {
+      requestsPerMonth: 50, // Premium requests
+    },
+    includedModels: [
+      'Claude Haiku 4.5',
+      'Claude Sonnet 4',
+      'Claude Sonnet 4.5',
+      'Claude Sonnet 4.6',
+      'Claude Opus 4.5',
+      'Claude Opus 4.6',
+      'Gemini 2.5 Pro',
+      'Gemini 3 Flash',
+      'GPT-5 mini',
+      'GPT-5.2',
+      'GPT-5.2-Codex',
+      'GPT-5.3-Codex',
+      'GPT-5.4',
+      'GPT-5.4 mini',
+      'GPT-5.5',
+      'xAI Grok Code Fast 1',
+    ],
+    overagePricing: {
+      inputPerMTok: 0.04, // $0.04 per additional premium request
+      outputPerMTok: 0.04,
+    },
+    subscriptionType: 'free',
+  },
+  {
+    id: 'copilot-pro',
+    name: 'Copilot Pro',
+    provider: 'GitHub Copilot',
+    monthlyCost: 10,
+    description: 'Unlimited completions with premium models',
+    features: [
+      'Cloud agent',
+      'Code review',
+      'Unlimited code completions',
+      'Claude and Codex models',
+      'Unlimited GPT-5 mini',
+      'IDE integration (VS Code, JetBrains, etc.)',
+      '300 premium requests/month',
+    ],
+    usageLimits: {
+      requestsPerMonth: 300, // Premium requests
+      unlimited: true, // Unlimited completions
+    },
+    includedModels: [
+      'Claude Haiku 4.5',
+      'Claude Sonnet 4',
+      'Claude Sonnet 4.5',
+      'Claude Sonnet 4.6',
+      'Claude Opus 4.5',
+      'Claude Opus 4.6',
+      'Gemini 2.5 Pro',
+      'Gemini 3 Flash',
+      'GPT-5 mini',
+      'GPT-5.2',
+      'GPT-5.2-Codex',
+      'GPT-5.3-Codex',
+      'GPT-5.4',
+      'GPT-5.4 mini',
+      'GPT-5.5',
+      'xAI Grok Code Fast 1',
+    ],
+    overagePricing: {
+      inputPerMTok: 0.04, // $0.04 per additional premium request
+      outputPerMTok: 0.04,
+    },
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'copilot-pro-plus',
+    name: 'Copilot Pro+',
+    provider: 'GitHub Copilot',
+    monthlyCost: 39,
+    description: '5x premium requests with all models including Opus 4.7',
+    features: [
+      'All Pro features',
+      '1,500 premium requests/month (5x Pro)',
+      'Claude Opus 4.7 access',
+      'GitHub Spark',
+      'Unlimited code completions',
+      'IDE integration (VS Code, JetBrains, etc.)',
+    ],
+    usageLimits: {
+      requestsPerMonth: 1500, // Premium requests
+      unlimited: true, // Unlimited completions
+    },
+    includedModels: [
+      'Claude Opus 4.7', // Pro+ exclusive
+      'Claude Haiku 4.5',
+      'Claude Sonnet 4',
+      'Claude Sonnet 4.5',
+      'Claude Sonnet 4.6',
+      'Claude Opus 4.5',
+      'Claude Opus 4.6',
+      'Gemini 2.5 Pro',
+      'Gemini 3 Flash',
+      'GPT-5 mini',
+      'GPT-5.2',
+      'GPT-5.2-Codex',
+      'GPT-5.3-Codex',
+      'GPT-5.4',
+      'GPT-5.4 mini',
+      'GPT-5.5',
+      'xAI Grok Code Fast 1',
+    ],
+    overagePricing: {
+      inputPerMTok: 0.04, // $0.04 per additional premium request
+      outputPerMTok: 0.04,
+    },
+    subscriptionType: 'monthly',
+  },
+  // GitHub Copilot - Business/Enterprise Plans
+  {
+    id: 'copilot-business',
+    name: 'Copilot Business',
+    provider: 'GitHub Copilot',
+    monthlyCost: 19,
+    description: 'Enterprise features for teams with license and policy management',
+    features: [
+      'Everything in Pro',
+      'License management',
+      'Policy management',
+      'Team collaboration features',
+      'Admin controls',
+      'IDE integration (VS Code, JetBrains, etc.)',
+    ],
+    usageLimits: {
+      requestsPerMonth: 300, // Premium requests per user
+      unlimited: true, // Unlimited completions
+    },
+    includedModels: [
+      'Claude Haiku 4.5',
+      'Claude Sonnet 4',
+      'Claude Sonnet 4.5',
+      'Claude Sonnet 4.6',
+      'Claude Opus 4.5',
+      'Claude Opus 4.6',
+      'Gemini 2.5 Pro',
+      'Gemini 3 Flash',
+      'GPT-5 mini',
+      'GPT-5.2',
+      'GPT-5.2-Codex',
+      'GPT-5.3-Codex',
+      'GPT-5.4',
+      'GPT-5.4 mini',
+      'GPT-5.5',
+      'xAI Grok Code Fast 1',
+    ],
+    overagePricing: {
+      inputPerMTok: 0.04,
+      outputPerMTok: 0.04,
+    },
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'copilot-enterprise',
+    name: 'Copilot Enterprise',
+    provider: 'GitHub Copilot',
+    monthlyCost: 0, // Custom pricing - contact sales
+    description: 'Full enterprise suite with GitHub.com chat and codebase indexing',
+    features: [
+      'Everything in Business',
+      'GitHub.com chat integration',
+      'Codebase indexing',
+      'Custom models',
+      'Enterprise security and compliance',
+      'Advanced admin controls',
+      'IDE integration (VS Code, JetBrains, etc.)',
+      'Custom pricing - contact sales',
+    ],
+    usageLimits: {
+      requestsPerMonth: 1500, // Premium requests per user (estimated)
+      unlimited: true, // Unlimited completions
+    },
+    includedModels: [
+      'Custom models',
+      'Claude Opus 4.7',
+      'Claude Haiku 4.5',
+      'Claude Sonnet 4',
+      'Claude Sonnet 4.5',
+      'Claude Sonnet 4.6',
+      'Claude Opus 4.5',
+      'Claude Opus 4.6',
+      'Gemini 2.5 Pro',
+      'Gemini 3 Flash',
+      'GPT-5 mini',
+      'GPT-5.2',
+      'GPT-5.2-Codex',
+      'GPT-5.3-Codex',
+      'GPT-5.4',
+      'GPT-5.4 mini',
+      'GPT-5.5',
+      'xAI Grok Code Fast 1',
+    ],
+    overagePricing: {
+      inputPerMTok: 0.04,
+      outputPerMTok: 0.04,
+    },
+    subscriptionType: 'usage-based',
+  },
+
+  // Factory AI Plans - Agent-native coding with rolling rate limits
+  {
+    id: 'factory-pro',
+    name: 'Factory Pro',
+    provider: 'Factory AI',
+    monthlyCost: 20,
+    description: 'Agent-native coding with rolling rate limits for individual developers',
+    features: [
+      'Rolling rate limits (5-hour, 7-day, 30-day windows)',
+      'Droid Core: Free fallback to open-weight models when limits hit',
+      'Agent-native architecture',
+      'Desktop, CLI, and SDK access',
+      'Cloud & local agents',
+      'Extra Usage: Prepaid credits ($10 minimum), never expire',
+      'Standard Usage consumed before Extra Usage',
+      'Missions: Autonomous agent tasks (draw from same limits)',
+    ],
+    usageLimits: {
+      unlimited: false, // Rolling rate limits apply
+    },
+    includedModels: ['Factory Droid (proprietary)', 'Droid Core (open-weight fallback)'],
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'factory-pro-plus',
+    name: 'Factory Pro Plus',
+    provider: 'Factory AI',
+    monthlyCost: 100,
+    description: '~5x Pro usage with Droid Computers (cloud computers)',
+    features: [
+      '~5x Pro usage limits',
+      'All Pro features',
+      'Droid Computers: Cloud computers for compute-heavy tasks',
+      'Rolling rate limits (5-hour, 7-day, 30-day windows)',
+      'Droid Core: Free fallback to open-weight models',
+      'Agent-native architecture',
+      'Desktop, CLI, and SDK access',
+      'Cloud & local agents',
+      'Extra Usage: Prepaid credits ($10 minimum), never expire',
+      'Missions: Autonomous agent tasks',
+    ],
+    usageLimits: {
+      unlimited: false, // Rolling rate limits apply, but 5x higher
+    },
+    includedModels: ['Factory Droid (proprietary)', 'Droid Computers', 'Droid Core (open-weight fallback)'],
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'factory-max',
+    name: 'Factory Max',
+    provider: 'Factory AI',
+    monthlyCost: 200,
+    description: '~10x Pro usage with early access to new features',
+    features: [
+      '~10x Pro usage limits',
+      'Early access to new features',
+      'All Pro Plus features',
+      'Droid Computers: Cloud computers included',
+      'Rolling rate limits (5-hour, 7-day, 30-day windows)',
+      'Droid Core: Free fallback to open-weight models',
+      'Agent-native architecture',
+      'Desktop, CLI, and SDK access',
+      'Cloud & local agents',
+      'Extra Usage: Prepaid credits ($10 minimum), never expire',
+      'Missions: Autonomous agent tasks',
+    ],
+    usageLimits: {
+      unlimited: false, // Rolling rate limits apply, but 10x higher
+    },
+    includedModels: ['Factory Droid (proprietary)', 'Droid Computers', 'Droid Core (open-weight fallback)', 'Beta models (early access)'],
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'factory-teams',
+    name: 'Factory Teams',
+    provider: 'Factory AI',
+    monthlyCost: 0, // Custom pricing
+    description: 'Team plan for up to 150 seats with admin controls',
+    features: [
+      'Up to 150 seats',
+      'SSO integration',
+      'Admin controls & user management',
+      'Zero Data Retention (ZDR) option',
+      'Shared Standard Usage across team',
+      'NOT affected by individual rate limit changes',
+      'Droid Core included for all members',
+      'Desktop, CLI, and SDK access',
+      'Cloud & local agents',
+      'Custom pricing - contact sales',
+    ],
+    usageLimits: {
+      unlimited: true, // Not affected by rate limit changes
+    },
+    includedModels: ['Factory Droid (proprietary)', 'Droid Computers', 'Droid Core (open-weight fallback)'],
+    subscriptionType: 'usage-based',
+  },
+  {
+    id: 'factory-enterprise',
+    name: 'Factory Enterprise',
+    provider: 'Factory AI',
+    monthlyCost: 0, // Custom pricing
+    description: 'Enterprise plan with unlimited seats and dedicated compute',
+    features: [
+      'Unlimited seats',
+      'Dedicated compute resources',
+      'Audit logs & compliance features',
+      'On-premise deployment options',
+      'SSO & advanced admin controls',
+      'Zero Data Retention (ZDR)',
+      'Shared Standard Usage across organization',
+      'NOT affected by rate limit changes',
+      'Droid Core included for all members',
+      'Desktop, CLI, and SDK access',
+      'Cloud & local agents',
+      'Priority support & SLAs',
+      'Custom pricing - contact sales',
+    ],
+    usageLimits: {
+      unlimited: true, // Not affected by rate limit changes
+    },
+    includedModels: ['Factory Droid (proprietary)', 'Droid Computers', 'Droid Core (open-weight fallback)', 'Custom models'],
+    subscriptionType: 'usage-based',
+  },
+
+  // Cursor Plans - VS Code fork with built-in AI
+  {
+    id: 'cursor-hobby',
+    name: 'Cursor Hobby',
+    provider: 'Cursor',
+    monthlyCost: 0,
+    description: 'Free tier to explore Cursor capabilities - VS Code fork with built-in AI',
+    features: [
+      'VS Code fork with built-in AI',
+      'Limited Agent requests',
+      'Limited Tab completions',
+      'No credit card required',
+      'Agent: AI agent for coding tasks',
+      'Tab: Smart code completions',
+      'Privacy Mode available',
+    ],
+    usageLimits: {
+      requestsPerMonth: 50, // Limited usage
+    },
+    includedModels: ['OpenAI GPT-4', 'Claude (Anthropic)', 'Gemini (Google)'],
+    subscriptionType: 'free',
+  },
+  {
+    id: 'cursor-pro',
+    name: 'Cursor Pro',
+    provider: 'Cursor',
+    monthlyCost: 20,
+    description: 'Extended limits with frontier models and MCPs - 1x usage',
+    features: [
+      'VS Code fork with built-in AI',
+      'Extended usage limits (1x)',
+      'Frontier models access',
+      'MCPs: Model Context Protocols',
+      'Skills and hooks',
+      'Cloud agents: Remote AI agents',
+      'Agent: AI agent for coding tasks',
+      'Tab: Smart code completions',
+      'Privacy Mode available',
+    ],
+    usageLimits: {
+      requestsPerMonth: 500, // Extended limits
+    },
+    includedModels: ['OpenAI GPT-4', 'Claude (Anthropic)', 'Gemini (Google)'],
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'cursor-pro-plus',
+    name: 'Cursor Pro+',
+    provider: 'Cursor',
+    monthlyCost: 60,
+    description: '3x usage on OpenAI/Claude/Gemini - Recommended plan',
+    features: [
+      'VS Code fork with built-in AI',
+      '3x usage on OpenAI/Claude/Gemini',
+      'RECOMMENDED plan',
+      'Frontier models access',
+      'MCPs: Model Context Protocols',
+      'Skills and hooks',
+      'Cloud agents: Remote AI agents',
+      'Agent: AI agent for coding tasks',
+      'Tab: Smart code completions',
+      'Privacy Mode available',
+    ],
+    usageLimits: {
+      requestsPerMonth: 1500, // 3x Pro
+    },
+    includedModels: ['OpenAI GPT-4', 'Claude (Anthropic)', 'Gemini (Google)'],
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'cursor-ultra',
+    name: 'Cursor Ultra',
+    provider: 'Cursor',
+    monthlyCost: 200,
+    description: '20x usage with priority access to new features',
+    features: [
+      'VS Code fork with built-in AI',
+      '20x usage on all models',
+      'Priority access to new features',
+      'Frontier models access',
+      'MCPs: Model Context Protocols',
+      'Skills and hooks',
+      'Cloud agents: Remote AI agents',
+      'Agent: AI agent for coding tasks',
+      'Tab: Smart code completions',
+      'Privacy Mode available',
+    ],
+    usageLimits: {
+      requestsPerMonth: 10000, // 20x Pro
+    },
+    includedModels: ['OpenAI GPT-4', 'Claude (Anthropic)', 'Gemini (Google)'],
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'cursor-teams',
+    name: 'Cursor Teams',
+    provider: 'Cursor',
+    monthlyCost: 40,
+    description: 'Team collaboration with shared chats, commands, and rules',
+    features: [
+      'VS Code fork with built-in AI',
+      'Per user pricing ($40/user/month)',
+      'Shared chats and commands',
+      'Shared rules',
+      'Team billing',
+      'Usage analytics',
+      'SAML/OIDC SSO',
+      'Agent: AI agent for coding tasks',
+      'Tab: Smart code completions',
+      'Privacy Mode available',
+    ],
+    usageLimits: {
+      requestsPerMonth: 500, // Per user
+    },
+    includedModels: ['OpenAI GPT-4', 'Claude (Anthropic)', 'Gemini (Google)'],
+    subscriptionType: 'monthly',
+  },
+  {
+    id: 'cursor-enterprise',
+    name: 'Cursor Enterprise',
+    provider: 'Cursor',
+    monthlyCost: 0, // Custom pricing
+    description: 'Enterprise-grade with pooled usage and advanced security',
+    features: [
+      'VS Code fork with built-in AI',
+      'Pooled usage across organization',
+      'Invoice billing',
+      'SCIM provisioning',
+      'AI code tracking API',
+      'Audit logs',
+      'Agent: AI agent for coding tasks',
+      'Tab: Smart code completions',
+      'Code Review: Automated PR reviews',
+      'Privacy Mode available',
+      'Custom pricing - contact sales',
+    ],
+    usageLimits: {
+      unlimited: true,
+    },
+    includedModels: ['OpenAI GPT-4', 'Claude (Anthropic)', 'Gemini (Google)'],
+    subscriptionType: 'usage-based',
+  },
+  {
+    id: 'cursor-bugbot-pro',
+    name: 'Cursor Bugbot Pro',
+    provider: 'Cursor',
+    monthlyCost: 40,
+    description: 'Code review plan with 200 PRs/month - Bugbot automated reviews',
+    features: [
+      'VS Code fork with built-in AI',
+      'Code Review: Automated PR reviews (Bugbot)',
+      '200 PRs per month',
+      'Bugbot rules configuration',
+      'Per user pricing ($40/user/month)',
+      'Agent: AI agent for coding tasks',
+      'Tab: Smart code completions',
+      'Privacy Mode available',
+    ],
+    usageLimits: {
+      requestsPerMonth: 200, // 200 PRs/month
+    },
+    includedModels: ['OpenAI GPT-4', 'Claude (Anthropic)', 'Gemini (Google)'],
+    subscriptionType: 'monthly',
   },
 ];
 
