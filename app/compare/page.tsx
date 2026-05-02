@@ -20,12 +20,12 @@ export default function ComparePage() {
   const fetchStats = async (forceRefresh = false) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const url = forceRefresh ? '/api/stats?refresh=true' : '/api/stats';
       const response = await fetch(url);
       const data = await response.json();
-      
+
       if (data.success) {
         setStats(data.data);
         setCacheInfo({
@@ -36,7 +36,7 @@ export default function ComparePage() {
       } else {
         setError(data.error || 'Failed to fetch stats');
       }
-    } catch (err) {
+    } catch {
       setError('Network error. Make sure the server is running.');
     } finally {
       setLoading(false);
@@ -44,15 +44,16 @@ export default function ComparePage() {
   };
 
   useEffect(() => {
-    fetchStats();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchStats();
   }, []);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <p className="text-muted-foreground">Loading stats for comparison...</p>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading comparison data...</p>
         </div>
       </div>
     );
@@ -60,13 +61,13 @@ export default function ComparePage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <Card className="w-full max-w-md">
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Card className="w-full max-w-sm border-border/50">
           <CardContent className="pt-6">
-            <div className="text-center space-y-4">
-              <p className="text-destructive font-medium">{error}</p>
-              <Button onClick={() => fetchStats()} variant="outline">
-                <RefreshCw className="mr-2 h-4 w-4" />
+            <div className="space-y-4 text-center">
+              <p className="text-sm font-medium text-destructive">{error}</p>
+              <Button onClick={() => fetchStats()} variant="outline" size="sm">
+                <RefreshCw className="mr-2 h-3.5 w-3.5" />
                 Try Again
               </Button>
             </div>
@@ -78,39 +79,46 @@ export default function ComparePage() {
 
   if (!stats) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">No stats available.</p>
+      <div className="py-12 text-center">
+        <p className="text-sm text-muted-foreground">No stats available.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Cost Comparison</h1>
-          <p className="text-muted-foreground">
-            Compare your OpenCode usage costs across different models
+          <h1 className="text-2xl font-semibold tracking-tight">Compare</h1>
+          <p className="text-sm text-muted-foreground">
+            Compare your usage costs across different models
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {cacheInfo?.isCached ? (
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               Cached {cacheInfo.cacheAge} ago
             </span>
           ) : cacheInfo ? (
-            <span className="text-sm text-green-600">Live data</span>
+            <span className="text-xs font-medium text-emerald-600">Live</span>
           ) : null}
-          <Button onClick={() => fetchStats(true)} variant="outline" disabled={loading}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Force Refresh
+          <Button
+            onClick={() => fetchStats(true)}
+            variant="outline"
+            size="sm"
+            disabled={loading}
+            className="h-8"
+          >
+            <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
           </Button>
         </div>
       </div>
 
-      <CostComparison 
-        stats={stats} 
-        currentCost={stats.cost.totalCost} 
+      <CostComparison
+        stats={stats}
+        currentCost={stats.cost.totalCost}
       />
     </div>
   );

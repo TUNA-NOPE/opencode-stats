@@ -5,9 +5,7 @@ import { ToolUsageChart } from '@/components/stats/ToolUsageChart';
 import { OpenCodeStats } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, RefreshCw, Wrench } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Loader2, RefreshCw } from 'lucide-react';
 
 export default function ToolsPage() {
   const [stats, setStats] = useState<OpenCodeStats | null>(null);
@@ -22,12 +20,12 @@ export default function ToolsPage() {
   const fetchStats = async (forceRefresh = false) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const url = forceRefresh ? '/api/stats?refresh=true' : '/api/stats';
       const response = await fetch(url);
       const data = await response.json();
-      
+
       if (data.success) {
         setStats(data.data);
         setCacheInfo({
@@ -38,7 +36,7 @@ export default function ToolsPage() {
       } else {
         setError(data.error || 'Failed to fetch stats');
       }
-    } catch (err) {
+    } catch {
       setError('Network error. Make sure the server is running.');
     } finally {
       setLoading(false);
@@ -46,15 +44,16 @@ export default function ToolsPage() {
   };
 
   useEffect(() => {
-    fetchStats();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void fetchStats();
   }, []);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="h-8 w-8 animate-spin" />
-          <p className="text-muted-foreground">Loading tool usage data...</p>
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading tool usage data...</p>
         </div>
       </div>
     );
@@ -62,13 +61,13 @@ export default function ToolsPage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-[60vh]">
-        <Card className="w-full max-w-md">
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Card className="w-full max-w-sm border-border/50">
           <CardContent className="pt-6">
-            <div className="text-center space-y-4">
-              <p className="text-destructive font-medium">{error}</p>
-              <Button onClick={() => fetchStats()} variant="outline">
-                <RefreshCw className="mr-2 h-4 w-4" />
+            <div className="space-y-4 text-center">
+              <p className="text-sm font-medium text-destructive">{error}</p>
+              <Button onClick={() => fetchStats()} variant="outline" size="sm">
+                <RefreshCw className="mr-2 h-3.5 w-3.5" />
                 Try Again
               </Button>
             </div>
@@ -80,8 +79,8 @@ export default function ToolsPage() {
 
   if (!stats) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">No stats available.</p>
+      <div className="py-12 text-center">
+        <p className="text-sm text-muted-foreground">No stats available.</p>
       </div>
     );
   }
@@ -91,65 +90,75 @@ export default function ToolsPage() {
   const topTool = stats.tools.reduce((max, t) => t.calls > max.calls ? t : max, stats.tools[0]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Wrench className="h-8 w-8" />
-            Tool Usage Analysis
-          </h1>
-          <p className="text-muted-foreground">
-            Deep dive into your OpenCode tool usage patterns
+          <h1 className="text-2xl font-semibold tracking-tight">Tools</h1>
+          <p className="text-sm text-muted-foreground">
+            Detailed tool usage analysis
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {cacheInfo?.isCached ? (
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               Cached {cacheInfo.cacheAge} ago
             </span>
           ) : cacheInfo ? (
-            <span className="text-sm text-green-600">Live data</span>
+            <span className="text-xs font-medium text-emerald-600">Live</span>
           ) : null}
-          <Button onClick={() => fetchStats(true)} variant="outline" disabled={loading}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Force Refresh
+          <Button
+            onClick={() => fetchStats(true)}
+            variant="outline"
+            size="sm"
+            disabled={loading}
+            className="h-8"
+          >
+            <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
           </Button>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Card className="border-border/50">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total Tool Calls</CardTitle>
+            <CardTitle className="text-xs font-medium text-muted-foreground">Total Tool Calls</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalCalls.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-2xl font-semibold tracking-tight font-mono">
+              {totalCalls.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
               Across {stats.overview.sessions} sessions
             </p>
           </CardContent>
         </Card>
-        
-        <Card>
+
+        <Card className="border-border/50">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Avg Calls/Session</CardTitle>
+            <CardTitle className="text-xs font-medium text-muted-foreground">Avg per Session</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{avgCallsPerSession.toFixed(1)}</div>
-            <p className="text-xs text-muted-foreground">
-              Average tool usage
+            <div className="text-2xl font-semibold tracking-tight font-mono">
+              {avgCallsPerSession.toFixed(1)}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Average usage
             </p>
           </CardContent>
         </Card>
-        
-        <Card>
+
+        <Card className="border-border/50">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Most Used Tool</CardTitle>
+            <CardTitle className="text-xs font-medium text-muted-foreground">Most Used</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{topTool?.name || 'N/A'}</div>
-            <p className="text-xs text-muted-foreground">
+            <div className="text-lg font-semibold tracking-tight truncate" title={topTool?.name}>
+              {topTool?.name || 'N/A'}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
               {topTool ? `${topTool.calls.toLocaleString()} calls (${topTool.percentage.toFixed(1)}%)` : ''}
             </p>
           </CardContent>
@@ -159,35 +168,32 @@ export default function ToolsPage() {
       <ToolUsageChart stats={stats} />
 
       {/* Detailed Tool List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Complete Tool Breakdown</CardTitle>
+      <Card className="border-border/50">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium">Complete Tool Breakdown</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="grid gap-2">
+        <CardContent className="p-0">
+          <div className="divide-y divide-border/50">
             {stats.tools
               .sort((a, b) => b.calls - a.calls)
               .map((tool, index) => (
-                <div key={tool.name}>
-                  <div className="flex items-center justify-between py-2">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-muted-foreground w-6">
-                        #{index + 1}
-                      </span>
-                      <code className="text-sm bg-muted px-2 py-1 rounded">
-                        {tool.name}
-                      </code>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-sm font-medium">
-                        {tool.calls.toLocaleString()} calls
-                      </span>
-                      <Badge variant="secondary">
-                        {tool.percentage.toFixed(1)}%
-                      </Badge>
-                    </div>
+                <div key={tool.name} className="flex items-center justify-between px-6 py-3 hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-xs text-muted-foreground w-5 shrink-0">
+                      {index + 1}
+                    </span>
+                    <code className="text-xs sm:text-sm bg-muted px-1.5 py-0.5 rounded truncate">
+                      {tool.name}
+                    </code>
                   </div>
-                  {index < stats.tools.length - 1 && <Separator />}
+                  <div className="flex items-center gap-3 sm:gap-6 shrink-0">
+                    <span className="text-sm font-mono font-medium">
+                      {tool.calls.toLocaleString()}
+                    </span>
+                    <span className="text-xs text-muted-foreground w-10 text-right font-mono">
+                      {tool.percentage.toFixed(1)}%
+                    </span>
+                  </div>
                 </div>
               ))}
           </div>

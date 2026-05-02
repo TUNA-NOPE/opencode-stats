@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { BarChart3, Calculator, Wrench, Home } from 'lucide-react';
+import { Calculator, Wrench, Home, Zap } from 'lucide-react';
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/compare', label: 'Cost Compare', icon: Calculator },
+  { href: '/', label: 'Overview', icon: Home },
+  { href: '/compare', label: 'Compare', icon: Calculator },
   { href: '/tools', label: 'Tools', icon: Wrench },
 ];
 
@@ -15,33 +15,49 @@ export function Navigation() {
   const pathname = usePathname();
   
   return (
-    <nav className="border-b bg-background">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="h-6 w-6" />
-            <span className="text-lg font-bold">OpenCode Stats</span>
-          </div>
+    <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-14 items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-foreground text-background">
+              <Zap className="h-4 w-4" />
+            </div>
+            <span className="text-sm font-semibold tracking-tight">OpenCode</span>
+          </Link>
           
-          <div className="flex items-center gap-4">
+          {/* Navigation Links */}
+          <div className="flex items-center gap-1">
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                    'relative px-3 py-1.5 text-sm font-medium transition-all duration-200 rounded-md',
                     isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
+                  {isActive && (
+                    <span className="absolute inset-0 bg-muted rounded-md" />
+                  )}
+                  <span className="relative flex items-center gap-1.5">
+                    <item.icon className="h-3.5 w-3.5" />
+                    {item.label}
+                  </span>
                 </Link>
               );
             })}
+          </div>
+          
+          {/* Right side - can add theme toggle or other actions here */}
+          <div className="flex items-center gap-2">
+            <div className="text-xs text-muted-foreground font-medium">
+              Stats Dashboard
+            </div>
           </div>
         </div>
       </div>
