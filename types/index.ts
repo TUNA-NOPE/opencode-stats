@@ -18,6 +18,13 @@ export interface OpenCodeStats {
     avgPerWeek: number;
     avgPerMonth: number;
   };
+  requests: {
+    avgPerSession: number;
+    avgPer5Hours: number;
+    avgPerDay: number;
+    avgPerWeek: number;
+    avgPerMonth: number;
+  };
   cost: {
     totalCost: number;
     avgCostPerDay: number;
