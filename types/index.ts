@@ -11,6 +11,13 @@ export interface OpenCodeStats {
       perMonth: number;
     };
   };
+  requests: {
+    avgPerSession: number;
+    avgPer5Hours: number;
+    avgPerDay: number;
+    avgPerWeek: number;
+    avgPerMonth: number;
+  };
   cost: {
     totalCost: number;
     avgCostPerDay: number;
@@ -22,6 +29,18 @@ export interface OpenCodeStats {
     output: number;
     cacheRead: number;
     cacheWrite: number;
+    avgInputPerSession: number;
+    avgOutputPerSession: number;
+    avgCacheReadPerSession: number;
+    avgCacheWritePerSession: number;
+    avgInputPerDay: number;
+    avgOutputPerDay: number;
+    avgCacheReadPerDay: number;
+    avgCacheWritePerDay: number;
+    avgInputPerRequest: number;
+    avgOutputPerRequest: number;
+    avgCacheReadPerRequest: number;
+    avgCacheWritePerRequest: number;
   };
   tools: ToolUsage[];
 }

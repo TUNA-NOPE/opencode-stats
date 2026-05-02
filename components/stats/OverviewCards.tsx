@@ -9,7 +9,7 @@ interface OverviewCardsProps {
 
 export function OverviewCards({ stats }: OverviewCardsProps) {
   const { overview, cost } = stats;
-  
+
   const cards = [
     {
       title: 'Total Sessions',
@@ -69,13 +69,13 @@ export function OverviewCards({ stats }: OverviewCardsProps) {
       description: 'Requests per month',
     },
   ];
-  
+
   return (
     <div className="space-y-6">
       {/* Main Stats */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card, index) => (
-          <div 
+          <div
             key={card.title}
             className="group relative overflow-hidden rounded-lg border border-border/50 bg-card p-4 transition-all duration-200 hover:border-border hover:shadow-sm"
             style={{ animationDelay: `${index * 50}ms` }}
@@ -109,7 +109,7 @@ export function OverviewCards({ stats }: OverviewCardsProps) {
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {avgCards.map((card, index) => (
-            <div 
+            <div
               key={card.title}
               className="group relative overflow-hidden rounded-lg border border-border/50 bg-card p-4 transition-all duration-200 hover:border-border hover:shadow-sm"
               style={{ animationDelay: `${index * 50}ms` }}
