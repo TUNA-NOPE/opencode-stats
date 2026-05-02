@@ -3,8 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { OpenCodeStats } from '@/types';
-import { compareCosts, DEFAULT_MODELS } from '@/lib/pricing';
-import { ArrowDown, ArrowUp, Minus } from 'lucide-react';
+import { compareCosts, calculateCost, DEFAULT_MODELS } from '@/lib/pricing';
+import { ArrowDown, ArrowUp, Minus, Infinity } from 'lucide-react';
 
 interface CostComparisonProps {
   stats: OpenCodeStats;
@@ -12,7 +12,17 @@ interface CostComparisonProps {
 }
 
 export function CostComparison({ stats, currentCost }: CostComparisonProps) {
-  const { tokens } = stats;
+  const { tokens, overview } = stats;
+
+  // Find FirePass Kimi K2.5 Turbo model
+  const firepassKimiModel = DEFAULT_MODELS.find(m => m.id === 'firepass/kimi-k2-5-turbo');
+  
+  // Calculate subscription-based cost: $7/week, adjusted for actual usage period
+  // If user has data for X days, we calculate how many weeks that represents
+  const weeksOfUsage = overview.days / 7;
+  const actualFirepassCost = firepassKimiModel?.subscriptionCost 
+    ? firepassKimiModel.subscriptionCost * Math.max(1, weeksOfUsage)
+    : 7.00; // Default to $7 if no usage data
 
   const comparisons = compareCosts(
     tokens.input,
@@ -26,9 +36,21 @@ export function CostComparison({ stats, currentCost }: CostComparisonProps) {
     return `$${amount.toFixed(2)}`;
   };
 
-  const getSavingsIndicator = (estimatedCost: number) => {
-    const diff = estimatedCost - currentCost;
-    const percentDiff = ((diff / currentCost) * 100);
+  const getSavingsIndicator = (estimatedCost: number, isSubscription = false) => {
+    // Baseline is $7/week FirePass subscription
+    const baselineCost = 7.00;
+    const diff = estimatedCost - baselineCost;
+    const percentDiff = ((diff / baselineCost) * 100);
+
+    // For unlimited subscription, show special indicator
+    if (isSubscription) {
+      return (
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-orange-600">
+          <Infinity className="h-3 w-3" />
+          Unlimited
+        </span>
+      );
+    }
 
     if (Math.abs(percentDiff) < 5) {
       return (
@@ -60,16 +82,24 @@ export function CostComparison({ stats, currentCost }: CostComparisonProps) {
     <div className="space-y-4">
       {/* Current Usage Summary */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="sm:col-span-2 lg:col-span-1 border-border/50">
+        <Card className="sm:col-span-2 lg:col-span-1 border-border/50 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-medium text-muted-foreground">Current Cost</CardTitle>
+            <CardTitle className="text-xs font-medium text-orange-700 dark:text-orange-300">
+              FirePass Unlimited
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold tracking-tight font-mono">
-              {formatCurrency(currentCost)}
+            <div className="text-2xl font-semibold tracking-tight font-mono text-orange-900 dark:text-orange-100">
+              $7.00<span className="text-sm font-normal text-muted-foreground">/week</span>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {stats.overview.sessions} sessions
+              {stats.overview.sessions} sessions · {overview.days} days
+            </p>
+            <p className="text-xs font-medium text-orange-600 dark:text-orange-400 mt-2">
+              ∞ Unlimited Kimi K2.5 Turbo
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              (vs ${currentCost.toFixed(2)} if on OpenCode Zen)
             </p>
           </CardContent>
         </Card>
@@ -128,31 +158,37 @@ export function CostComparison({ stats, currentCost }: CostComparisonProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {comparisons.map((comparison) => (
-                  <TableRow key={comparison.model.id} className="hover:bg-muted/30">
-                    <TableCell className="font-medium text-sm">
-                      {comparison.model.name}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {comparison.model.provider}
-                    </TableCell>
-                    <TableCell className="text-right text-sm font-mono">
-                      ${comparison.model.inputPrice.toFixed(3)}
-                    </TableCell>
-                    <TableCell className="text-right text-sm font-mono">
-                      ${comparison.model.outputPrice.toFixed(3)}
-                    </TableCell>
-                    <TableCell className="text-right text-sm font-mono">
-                      ${comparison.model.cachedReadPrice.toFixed(3)}
-                    </TableCell>
-                    <TableCell className="text-right text-sm font-mono font-medium">
-                      {formatCurrency(comparison.totalCost)}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {getSavingsIndicator(comparison.totalCost)}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {comparisons.map((comparison) => {
+                  const isSubscription = !!comparison.model.subscriptionCost;
+                  return (
+                    <TableRow key={comparison.model.id} className={`hover:bg-muted/30 ${isSubscription ? 'bg-orange-50/50 dark:bg-orange-950/10' : ''}`}>
+                      <TableCell className="font-medium text-sm">
+                        {comparison.model.name}
+                        {isSubscription && (
+                          <span className="ml-2 text-xs text-orange-600 font-medium">★</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {comparison.model.provider}
+                      </TableCell>
+                      <TableCell className="text-right text-sm font-mono">
+                        {isSubscription ? '—' : `$${comparison.model.inputPrice.toFixed(3)}`}
+                      </TableCell>
+                      <TableCell className="text-right text-sm font-mono">
+                        {isSubscription ? '—' : `$${comparison.model.outputPrice.toFixed(3)}`}
+                      </TableCell>
+                      <TableCell className="text-right text-sm font-mono">
+                        {isSubscription ? '—' : `$${comparison.model.cachedReadPrice.toFixed(3)}`}
+                      </TableCell>
+                      <TableCell className="text-right text-sm font-mono font-medium">
+                        {isSubscription ? `$${comparison.model.subscriptionCost}/wk` : formatCurrency(comparison.totalCost)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {getSavingsIndicator(comparison.totalCost, isSubscription)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
@@ -161,7 +197,39 @@ export function CostComparison({ stats, currentCost }: CostComparisonProps) {
 
       {/* Cost Breakdown Cards */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {comparisons.slice(0, 3).map((comparison) => (
+        {/* Show FirePass first as current plan */}
+        {firepassKimiModel && (
+          <Card className="border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-orange-900 dark:text-orange-100">
+                  {firepassKimiModel.name}
+                </CardTitle>
+                {getSavingsIndicator(0, true)}
+              </div>
+              <p className="text-xs text-orange-700 dark:text-orange-300">{firepassKimiModel.provider}</p>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Plan</span>
+                  <span className="font-mono font-medium">Unlimited</span>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">Weekly Rate</span>
+                  <span className="font-mono">${firepassKimiModel.subscriptionCost}/week</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between border-t border-orange-200 dark:border-orange-800 pt-2 mt-2">
+                <span className="text-sm font-medium">Your Cost</span>
+                <span className="font-mono font-semibold text-orange-700 dark:text-orange-300">~$7-30/mo</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
+        {/* Show top 2 alternatives */}
+        {comparisons.filter(c => !c.model.subscriptionCost).slice(0, 2).map((comparison) => (
           <Card key={comparison.model.id} className="border-border/50">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -185,7 +253,7 @@ export function CostComparison({ stats, currentCost }: CostComparisonProps) {
                 ))}
               </div>
               <div className="flex items-center justify-between border-t pt-2 mt-2">
-                <span className="text-sm font-medium">Total</span>
+                <span className="text-sm font-medium">Est. Cost</span>
                 <span className="font-mono font-semibold">{formatCurrency(comparison.totalCost)}</span>
               </div>
             </CardContent>

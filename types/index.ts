@@ -3,6 +3,13 @@ export interface OpenCodeStats {
     sessions: number;
     messages: number;
     days: number;
+    avgRequests: {
+      perSession: number;
+      per5Hours: number;
+      perDay: number;
+      perWeek: number;
+      perMonth: number;
+    };
   };
   cost: {
     totalCost: number;
@@ -34,6 +41,8 @@ export interface ModelPricing {
   cachedReadPrice: number;  // per 1M tokens (prompt caching read)
   cachedWritePrice: number; // per 1M tokens (prompt caching write)
   contextWindow: number;
+  subscriptionCost?: number; // Flat subscription cost (e.g., $7/week)
+  subscriptionPeriod?: 'week' | 'month';
 }
 
 export interface CostComparison {

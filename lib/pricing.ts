@@ -116,7 +116,7 @@ export const DEFAULT_MODELS: ModelPricing[] = [
     cachedWritePrice: 0,
     contextWindow: 1000000,
   },
-  // Kimi Models
+  // Kimi Models (OpenCode Zen)
   {
     id: 'opencode/kimi-k2-5',
     name: 'Kimi K2.5',
@@ -136,6 +136,21 @@ export const DEFAULT_MODELS: ModelPricing[] = [
     cachedReadPrice: 0.16,
     cachedWritePrice: 0,
     contextWindow: 256000,
+  },
+  // FirePass (Fireworks AI) - Kimi Models
+  // NOTE: This model has UNLIMITED subscription pricing: $7/week (~$30/month)
+  // Token prices are effectively $0 for subscribers
+  {
+    id: 'firepass/kimi-k2-5-turbo',
+    name: 'Kimi K2.5 Turbo',
+    provider: 'FirePass Unlimited',
+    inputPrice: 0,
+    outputPrice: 0,
+    cachedReadPrice: 0,
+    cachedWritePrice: 0,
+    contextWindow: 256000,
+    subscriptionCost: 7.00, // Weekly flat rate
+    subscriptionPeriod: 'week',
   },
   // GPT Models (OpenCode Zen)
   {

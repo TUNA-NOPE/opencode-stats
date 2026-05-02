@@ -1,14 +1,42 @@
 import { OpenCodeStats, ToolUsage } from '@/types';
 
+function calculateAvgRequests(messages: number, days: number, sessions: number): {
+  perSession: number;
+  per5Hours: number;
+  perDay: number;
+  perWeek: number;
+  perMonth: number;
+} {
+  // Calculate averages based on messages
+  const perSession = sessions > 0 ? messages / sessions : 0;
+  const perDay = days > 0 ? messages / days : 0;
+  const per5Hours = days > 0 ? (messages / days) / 4.8 : 0; // 24 hours / 5 = 4.8 periods per day
+  const perWeek = days > 0 ? (messages / days) * 7 : 0;
+  const perMonth = days > 0 ? (messages / days) * 30 : 0;
+
+  return {
+    perSession,
+    per5Hours,
+    perDay,
+    perWeek,
+    perMonth,
+  };
+}
+
 export function parseStatsOutput(output: string): OpenCodeStats {
   const lines = output.split('\n');
   
   // Parse Overview section
   const overviewSection = extractSection(lines, 'OVERVIEW');
+  const sessions = extractNumber(overviewSection, 'Sessions');
+  const messages = extractNumber(overviewSection, 'Messages');
+  const days = extractNumber(overviewSection, 'Days');
+  
   const overview = {
-    sessions: extractNumber(overviewSection, 'Sessions'),
-    messages: extractNumber(overviewSection, 'Messages'),
-    days: extractNumber(overviewSection, 'Days'),
+    sessions,
+    messages,
+    days,
+    avgRequests: calculateAvgRequests(messages, days, sessions),
   };
   
   // Parse Cost & Tokens section
