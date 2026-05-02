@@ -19,6 +19,10 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'OpenCode Stats Dashboard',
   description: 'Analyze your OpenCode CLI usage and compare costs across AI models',
+  icons: {
+    icon: '/icon.svg',
+    apple: '/apple-icon.svg',
+  },
 };
 
 export default function RootLayout({

@@ -3,11 +3,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Calculator, Wrench, Home, Zap } from 'lucide-react';
+import { Calculator, Wrench, Home, Zap, CreditCard, Crown } from 'lucide-react';
 
 const navItems = [
   { href: '/', label: 'Overview', icon: Home },
   { href: '/compare', label: 'Compare', icon: Calculator },
+  { href: '/pricing', label: 'Pricing', icon: CreditCard },
+  { href: '/plans', label: 'Best Value', icon: Crown },
   { href: '/tools', label: 'Tools', icon: Wrench },
 ];
 
