@@ -52,17 +52,14 @@ export function parseStatsOutput(output: string): OpenCodeStats {
   const outputTokens = extractTokens(costSection, 'Output');
   const cacheReadTokens = extractTokens(costSection, 'Cache Read');
   const cacheWriteTokens = extractTokens(costSection, 'Cache Write');
-  const sessions = overview.sessions;
-  const days = overview.days;
-  
+
   // Calculate request averages
-  const messages = overview.messages;
   const requests = {
-    avgPerSession: sessions > 0 ? Math.round(messages / sessions) : 0,
-    avgPer5Hours: days > 0 ? Math.round(messages / (days * 24 / 5)) : 0,
-    avgPerDay: days > 0 ? Math.round(messages / days) : 0,
-    avgPerWeek: days > 0 ? Math.round(messages / (days / 7)) : 0,
-    avgPerMonth: days > 0 ? Math.round(messages / (days / 30)) : 0,
+    avgPerSession: overview.sessions > 0 ? Math.round(overview.messages / overview.sessions) : 0,
+    avgPer5Hours: overview.days > 0 ? Math.round(overview.messages / (overview.days * 24 / 5)) : 0,
+    avgPerDay: overview.days > 0 ? Math.round(overview.messages / overview.days) : 0,
+    avgPerWeek: overview.days > 0 ? Math.round(overview.messages / (overview.days / 7)) : 0,
+    avgPerMonth: overview.days > 0 ? Math.round(overview.messages / (overview.days / 30)) : 0,
   };
   
   const tokens = {
@@ -70,14 +67,14 @@ export function parseStatsOutput(output: string): OpenCodeStats {
     output: outputTokens,
     cacheRead: cacheReadTokens,
     cacheWrite: cacheWriteTokens,
-    avgInputPerSession: sessions > 0 ? Math.round(inputTokens / sessions) : 0,
-    avgOutputPerSession: sessions > 0 ? Math.round(outputTokens / sessions) : 0,
-    avgCacheReadPerSession: sessions > 0 ? Math.round(cacheReadTokens / sessions) : 0,
-    avgCacheWritePerSession: sessions > 0 ? Math.round(cacheWriteTokens / sessions) : 0,
-    avgInputPerDay: days > 0 ? Math.round(inputTokens / days) : 0,
-    avgOutputPerDay: days > 0 ? Math.round(outputTokens / days) : 0,
-    avgCacheReadPerDay: days > 0 ? Math.round(cacheReadTokens / days) : 0,
-    avgCacheWritePerDay: days > 0 ? Math.round(cacheWriteTokens / days) : 0,
+    avgInputPerSession: overview.sessions > 0 ? Math.round(inputTokens / overview.sessions) : 0,
+    avgOutputPerSession: overview.sessions > 0 ? Math.round(outputTokens / overview.sessions) : 0,
+    avgCacheReadPerSession: overview.sessions > 0 ? Math.round(cacheReadTokens / overview.sessions) : 0,
+    avgCacheWritePerSession: overview.sessions > 0 ? Math.round(cacheWriteTokens / overview.sessions) : 0,
+    avgInputPerDay: overview.days > 0 ? Math.round(inputTokens / overview.days) : 0,
+    avgOutputPerDay: overview.days > 0 ? Math.round(outputTokens / overview.days) : 0,
+    avgCacheReadPerDay: overview.days > 0 ? Math.round(cacheReadTokens / overview.days) : 0,
+    avgCacheWritePerDay: overview.days > 0 ? Math.round(cacheWriteTokens / overview.days) : 0,
     avgInputPerRequest: overview.messages > 0 ? Math.round(inputTokens / overview.messages) : 0,
     avgOutputPerRequest: overview.messages > 0 ? Math.round(outputTokens / overview.messages) : 0,
     avgCacheReadPerRequest: overview.messages > 0 ? Math.round(cacheReadTokens / overview.messages) : 0,
