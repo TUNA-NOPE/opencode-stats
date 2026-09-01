@@ -16,6 +16,8 @@ const CHART_COLORS = {
   cacheWrite: '#9ca3af',
 };
 
+const COLORS = [CHART_COLORS.input, CHART_COLORS.output, CHART_COLORS.cacheRead, CHART_COLORS.cacheWrite];
+
 export function TokenBreakdown({ stats }: TokenBreakdownProps) {
   const { tokens } = stats;
   
@@ -255,116 +257,6 @@ export function TokenBreakdown({ stats }: TokenBreakdownProps) {
         </CardContent>
       </Card>
 
-      <Card className="md:col-span-2">
-        <CardHeader>
-          <CardTitle>Average Token Usage</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            <div>
-              <h4 className="text-sm font-medium mb-3">Per Session</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Input</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[0] }}>
-                    {formatNumber(tokens.avgInputPerSession)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/session</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Output</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[1] }}>
-                    {formatNumber(tokens.avgOutputPerSession)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/session</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Cache Read</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[2] }}>
-                    {formatNumber(tokens.avgCacheReadPerSession)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/session</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Cache Write</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[3] }}>
-                    {formatNumber(tokens.avgCacheWritePerSession)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/session</div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-sm font-medium mb-3">Per Day</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Input</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[0] }}>
-                    {formatNumber(tokens.avgInputPerDay)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/day</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Output</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[1] }}>
-                    {formatNumber(tokens.avgOutputPerDay)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/day</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Cache Read</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[2] }}>
-                    {formatNumber(tokens.avgCacheReadPerDay)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/day</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Cache Write</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[3] }}>
-                    {formatNumber(tokens.avgCacheWritePerDay)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/day</div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h4 className="text-sm font-medium mb-3">Per Request</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Input</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[0] }}>
-                    {formatNumber(tokens.avgInputPerRequest)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/request</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Output</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[1] }}>
-                    {formatNumber(tokens.avgOutputPerRequest)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/request</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Cache Read</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[2] }}>
-                    {formatNumber(tokens.avgCacheReadPerRequest)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/request</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm text-muted-foreground">Cache Write</div>
-                  <div className="text-xl font-bold" style={{ color: COLORS[3] }}>
-                    {formatNumber(tokens.avgCacheWritePerRequest)}
-                  </div>
-                  <div className="text-xs text-muted-foreground">tokens/request</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
